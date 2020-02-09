@@ -1,43 +1,30 @@
 const mongoose = require('mongoose')
-const bcrypt = require('bcryptjs')
 const validator = require('validator')
+const bcrypt = require('bcryptjs')
 
-const userSchema = mongoose.Schema({
-    firstName: {
+const userSchema = new mongoose.Schema({
+    name: {
         type: String,
-        required: [true, 'A user must have a first name.']
-    },
-    lastName: {
-        type: String,
-        required: [true, 'A user must have a last name']
-    },
-    username: {
-        type: String,
-        required: [true, 'A user must have a username.'],
-        unique: [true, 'This username is already taken.']
+        required: [true, 'A user must have a name.']
     },
     email: {
-        type: String,
-        required: [true, 'A user must have an email'],
-        validate: [validator.isEmail, 'User must have a valid email']
-    },
-    age: {
-        type: Number,
-        required: [true, 'A user must have an age']
+        type: String, 
+        required: [true, 'A user must have an email.'],
+        validate: [validator.isEmail, 'Must be a valid email.']
     },
     password: {
         type: String, 
-        required: [true, 'A user must have a password'],
-        minlength: [8, 'Password must be longer than 8 characters']
+        required: [true, 'A user must have a password.'],
+        minlength: [8, 'A password must be at least 8 characters.'],
+        select: false
     },
     passwordConfirm: {
-        type: String,
-        required: [true, 'Please enter the password confirmation'],
+        type: String, 
+        required: [true, 'Please enter the password confirmation.'],
         validate: {
             validator: function(el) {
                 return el === this.password
-            },
-            message: 'Passwords must match.'
+            }
         }
     }
 })
@@ -48,6 +35,10 @@ userSchema.pre('save', async function(next) {
     this.passwordConfirm = undefined
     next()
 })
+
+userSchema.methods.confirmPassword = function(receivedPassword, actualPassword) {
+    return bcrypt.compare(receivedPassword, actualPassword)
+}
 
 const User = mongoose.model('User', userSchema)
 
