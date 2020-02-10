@@ -11,10 +11,10 @@ mongoose.connect(db, {
     useFindAndModify: false,
     useUnifiedTopology: true
 }).then(() => {
-    console.log('Database connection established! 👍')
+    console.log('Database connection established! ')
 })
 
 const port = 3000
 app.listen(port, () => {
-    console.log(`Server running on port ${port}...🤘`)
+    console.log(`Server running on port ${port}...`)
 })
